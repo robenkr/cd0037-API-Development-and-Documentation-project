@@ -75,6 +75,26 @@ def create_app(test_config=None):
         })
 
     # TODO: Create an endpoint to DELETE question using a question ID.
+    # @app.route('/questions/<int:question_id>', methods=['DELETE'])
+    # @cross_origin()
+    # def delete_question(question_id):
+    #     try:
+    #         question = Question.query.filter(Question.id == question_id).one_or_none()
+    #         if question is None:
+    #             return not_found(404)
+    #
+    #         question.delete()
+    #
+    #         return jsonify({
+    #             'success': True,
+    #             'deleted': question_id,
+    #             'questions': [question.format() for question in Question.question.all()],
+    #             'total_question': len(Question.query.all()),
+    #             'categories': [category.format() for category in Category.query.all()],
+    #             'currentCategory': None
+    #         })
+    #     except:
+    #         return unprocessable(422)
 
     """
     TEST: When you click the trash icon next to a question, the question will be removed.
@@ -83,6 +103,28 @@ def create_app(test_config=None):
 
     # TODO: Create an endpoint to POST a new question, which will require the question and answer text, category,
     #  and difficulty score.
+    @app.route('questions', methods=['POST'])
+    @cross_origin()
+    def create_question():
+        body = request.get_json()
+
+        try:
+            question = Question(
+                question=body.get('question', None),
+                answer=body.get('answer', None),
+                category=body.get('category', None),
+                difficulty=body.get('difficulty', None),
+            )
+            question.insert()
+
+            return jsonify({
+                'success': True,
+                'created': question.id,
+                'questions': [question.format() for question in Question.query.all()],
+                'total_question': len(Question.query.all())
+            })
+        except:
+            return unprocessable(422)
 
     """
     TEST: When you submit a question on the "Add" tab,
