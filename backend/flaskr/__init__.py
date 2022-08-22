@@ -1,7 +1,7 @@
 import os
 from flask import Flask, request, abort, jsonify
 from flask_sqlalchemy import SQLAlchemy
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 import random
 
 from models import setup_db, Question, Category
@@ -28,7 +28,8 @@ def create_app(test_config=None):
 
     # TODO:Create an endpoint to handle GET requests for all available categories.
 
-    @app.route('/categories', methods=['GET'])
+    @app.route('/categories', methods=['GET', 'POST'])
+    @cross_origin()
     def get_categories():
         categories = [category.format() for category in Category.query.all()]
 
@@ -48,7 +49,11 @@ def create_app(test_config=None):
     Clicking on the page numbers should update the questions.
     """
 
-    def paginate_questions(request, selection):
+    @app.route('/questions', methods=['GET'])
+    @cross_origin()
+    def get_questions():
+        selection = Question.query.order_by(Question.id).all()
+
         page = request.args.get('page', 1, type=int)
         start = (page - 1) * QUESTIONS_PER_PAGE
         end = start + QUESTIONS_PER_PAGE
@@ -56,21 +61,17 @@ def create_app(test_config=None):
         questions = [question.format() for question in selection]
         current_questions = questions[start:end]
 
-        return current_questions
+        categories = [category.format() for category in Category.query.all()]
 
-    @app.route('/questions', methods=['GET'])
-    def get_questions():
-        selection = Question.query.order_by(Question.id).all()
-        questions = paginate_questions(request, selection)
-
-        if len(questions) == 0:
-            abort(404)
+        if len(current_questions) == 0:
+            return not_found(404)
 
         return jsonify({
             'success': True,
-            'questions': questions,
+            'questions': current_questions,
             'total_question': len(Question.query.all()),
-            'categories': get_categories().categories
+            'categories': categories,
+            'currentCategory': None
         })
 
     # TODO: Create an endpoint to DELETE question using a question ID.
