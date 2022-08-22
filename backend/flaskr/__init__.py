@@ -100,6 +100,26 @@ def create_app(test_config=None):
     """
 
     # TODO: Create a GET endpoint to get questions based on category.
+    @app.route('/categories/<int:category_id>/questions', methods=['GET'])
+    @cross_origin()
+    def question_by_category(category_id):
+        category = Category.query.filter(Category.id == category_id).first()
+        if category is None:
+            return not_found(404)
+
+        questions = Question.query.filter(Question.category == category_id).all()
+        current_questions = [question.format() for question in questions]
+
+        if questions is None:
+            return not_found(404)
+
+        return jsonify({
+            'success': True,
+            'questions': current_questions,
+            'category': category.format(),
+            'total_question': len(current_questions),
+
+        })
 
     """
     TEST: In the "List" tab / main screen, clicking on one of the
