@@ -245,4 +245,24 @@ def create_app(test_config=None):
             "message": "Method not allowed"
         }), 405
 
+    @app.route('/categories', methods=['POST'])
+    @cross_origin()
+    def create_category():
+        body = request.get_json()
+
+        try:
+            category = Category(
+                type=body.get('type', None),
+            )
+            category.insert()
+
+            return jsonify({
+                'success': True,
+                'created': category.id,
+                'categories': [category.format() for category in Category.query.all()],
+                'total_categories': len(Category.query.all())
+            })
+        except:
+            return unprocessable(422)
+
     return app
