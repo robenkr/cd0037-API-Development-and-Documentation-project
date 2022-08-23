@@ -94,7 +94,7 @@ def create_app(test_config=None):
                 'currentCategory': None
             })
 
-        except :
+        except:
             return unprocessable(422)
 
     """
@@ -174,6 +174,37 @@ def create_app(test_config=None):
     #  This endpoint should take category and previous question parameters
     #  and return a random questions within the given category,
     #  if provided, and that is not one of the previous questions.
+    def get_random_question(previous_questions, questions):
+        if previous_questions:
+            questions.remove(previous_questions, None)
+        if not questions:
+            return []
+
+        return random.choice(questions)
+
+    @app.route('/quizzes', methods=['POST'])
+    @cross_origin()
+    def next_question():
+        body = request.get_json()
+        previous_questions = body.get('previous_questions', None)
+
+        if type(body.get('quiz_category', None).get('type')) == str:
+            questions = Question.query.all()
+            all_questions = [question.format() for question in questions]
+
+            current_question = get_random_question(previous_questions, all_questions)
+
+        else:
+            category_id = body.get('quiz_category', None).get('type').get('id')
+
+            questions = Question.query.filter(Question.category == category_id).all()
+            category_questions = [question.format() for question in questions]
+
+            current_question = get_random_question(previous_questions, category_questions)
+
+        return jsonify({
+            'currentQuestion': current_question
+        })
 
     """
     TEST: In the "Play" tab, after a user selects "All" or a category,
