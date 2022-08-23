@@ -94,13 +94,13 @@ class FormView extends Component {
               {Object.keys(this.state.categories).map((id) => {
                 return (
                   <option key={id} value={id}>
-                    {this.state.categories[id]}
+                    {this.state.categories[id].type}
                   </option>
                 );
               })}
             </select>
           </label>
-          <input type='submit' className='button' value='Submit' />
+          <input type='submit' className='button pointer' value='Submit' />
         </form>
       </div>
     );
