@@ -69,9 +69,9 @@ def create_app(test_config=None):
         return jsonify({
             'success': True,
             'questions': current_questions,
-            'total_question': len(Question.query.all()),
+            'total_questions': len(Question.query.all()),
             'categories': categories,
-            'currentCategory': None
+            'current_category': None
         })
 
     # TODO: Create an endpoint to DELETE question using a question ID.
@@ -160,7 +160,7 @@ def create_app(test_config=None):
             'success': True,
             'questions': current_questions,
             'category': category.format(),
-            'total_question': len(current_questions),
+            'total_questions': len(current_questions),
 
         })
 

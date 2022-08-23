@@ -52,7 +52,7 @@ class QuestionView extends Component {
             pageNumbers.push(
                 <span
                     key={i}
-                    className={`page-num ${i === this.state.page ? 'active' : ''}`}
+                    className={`page-num pointer ${i === this.state.page ? 'active' : ''}`}
                     onClick={() => {
                         this.selectPage(i);
                     }}
@@ -143,7 +143,7 @@ class QuestionView extends Component {
                             <li className="pointer"
                                 key={id}
                                 onClick={() => {
-                                    this.getByCategory(id);
+                                    this.getByCategory(this.state.categories[id].id);
                                 }}
                             >
                                 {this.state.categories[id].type}
