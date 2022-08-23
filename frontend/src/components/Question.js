@@ -21,19 +21,19 @@ class Question extends Component {
         <div className='Question-status'>
           <img
             className='category'
-            alt={`${category.toLowerCase()}`}
-            src={`${category.toLowerCase()}.svg`}
+            alt={`${category[0].type}`}
+            src={`${category[0].type.toLowerCase()}.svg`}
           />
           <div className='difficulty'>Difficulty: {difficulty}</div>
           <img
             src='delete.png'
             alt='delete'
-            className='delete'
+            className='delete pointer'
             onClick={() => this.props.questionAction('DELETE')}
           />
         </div>
         <div
-          className='show-answer button'
+          className='show-answer button pointer'
           onClick={() => this.flipVisibility()}
         >
           {this.state.visibleAnswer ? 'Hide' : 'Show'} Answer

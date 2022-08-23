@@ -9,28 +9,28 @@ class Header extends Component {
   render() {
     return (
       <div className='App-header'>
-        <h1
+        <h1 className="pointer"
           onClick={() => {
             this.navTo('');
           }}
         >
           Udacitrivia
         </h1>
-        <h2
+        <h2 className="pointer"
           onClick={() => {
             this.navTo('');
           }}
         >
           List
         </h2>
-        <h2
+        <h2 className="pointer"
           onClick={() => {
             this.navTo('/add');
           }}
         >
           Add
         </h2>
-        <h2
+        <h2 className="pointer"
           onClick={() => {
             this.navTo('/play');
           }}

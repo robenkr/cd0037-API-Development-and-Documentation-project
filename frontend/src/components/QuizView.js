@@ -104,7 +104,7 @@ class QuizView extends Component {
       <div className='quiz-play-holder'>
         <div className='choose-header'>Choose Category</div>
         <div className='category-holder'>
-          <div className='play-category' onClick={this.selectCategory}>
+          <div className='play-category pointer' onClick={this.selectCategory}>
             ALL
           </div>
           {Object.keys(this.state.categories).map((id) => {
@@ -112,12 +112,12 @@ class QuizView extends Component {
               <div
                 key={id}
                 value={id}
-                className='play-category'
+                className='play-category pointer'
                 onClick={() =>
                   this.selectCategory({ type: this.state.categories[id], id })
                 }
               >
-                {this.state.categories[id]}
+                {this.state.categories[id].type}
               </div>
             );
           })}
