@@ -108,23 +108,37 @@ def create_app(test_config=None):
     @cross_origin()
     def create_question():
         body = request.get_json()
+        search = body.get('searchTerm', None)
 
         try:
-            question = Question(
-                question=body.get('question', None),
-                answer=body.get('answer', None),
-                category=body.get('category', None),
-                difficulty=body.get('difficulty', None),
-            )
-            question.insert()
+            if search:
+                query = Question.query.order_by(Question.id).filter(Question.question.ilike('%{}%'.format(search)))
+                questions = [question.format() for question in query]
 
-            return jsonify({
-                'success': True,
-                'created': question.id,
-                'questions': [question.format() for question in Question.query.all()],
-                'total_question': len(Question.query.all())
-            })
-        except:
+                print('SEARCH RESULT=>', questions)
+                return jsonify({
+                    'success': True,
+                    'questions': questions,
+                    'total_questions': len(query.all())
+
+                })
+            else:
+                question = Question(
+                    question=body.get('question', None),
+                    answer=body.get('answer', None),
+                    category=body.get('category', None),
+                    difficulty=body.get('difficulty', None),
+                )
+                question.insert()
+
+                return jsonify({
+                    'success': True,
+                    'created': question.id,
+                    'questions': [question.format() for question in Question.query.all()],
+                    'total_question': len(Question.query.all())
+                })
+        except Exception as e:
+            print('ERROR =>', e)
             return unprocessable(422)
 
     """
