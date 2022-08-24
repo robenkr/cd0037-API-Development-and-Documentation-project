@@ -115,7 +115,6 @@ def create_app(test_config=None):
                 query = Question.query.order_by(Question.id).filter(Question.question.ilike('%{}%'.format(search)))
                 questions = [question.format() for question in query]
 
-                print('SEARCH RESULT=>', questions)
                 return jsonify({
                     'success': True,
                     'questions': questions,
@@ -137,8 +136,7 @@ def create_app(test_config=None):
                     'questions': [question.format() for question in Question.query.all()],
                     'total_question': len(Question.query.all())
                 })
-        except Exception as e:
-            print('ERROR =>', e)
+        except:
             return unprocessable(422)
 
     """
@@ -190,7 +188,8 @@ def create_app(test_config=None):
     #  if provided, and that is not one of the previous questions.
     def get_random_question(previous_questions, questions):
         if previous_questions:
-            questions.remove(previous_questions, None)
+            for previous_question in previous_questions:
+                questions.remove(previous_question)
         if not questions:
             return []
 
