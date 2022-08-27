@@ -102,3 +102,658 @@ createdb trivia_test
 psql trivia_test < trivia.psql
 python test_flaskr.py
 ```
+
+## API Reference
+
+### Getting Started
+
+- Base URL: At present this app can only be run locally and is not hosted as a base URL. The backend app is hosted at
+  the default, `http://127.0.0.1:5000/`, which is set as a proxy in the frontend configuration.
+- Authentication: This version of the application does not require authentication or API keys.
+
+### Error Handling
+
+Errors are returned as JSON objects in the following format:
+
+```
+{
+    "success": False, 
+    "error": 404,
+    "message": "Not found"
+}
+```
+
+The API will return two error types when requests fail:
+
+- 404: Resource Not Found
+- 422: Unprocessable
+
+### Endpoints
+
+#### GET /categories
+
+- General:
+  - Returns a list of category objects, success value, and total number of categories
+- Sample: `curl http://127.0.0.1:5000/categories`
+
+``` 
+{
+  "categories": [
+    {
+      "id": 7,
+      "type": "Science"
+    },
+    {
+      "id": 8,
+      "type": "Art"
+    },
+    {
+      "id": 9,
+      "type": "Geography"
+    },
+    {
+      "id": 10,
+      "type": "History"
+    },
+    {
+      "id": 11,
+      "type": "Entertainment"
+    },
+    {
+      "id": 12,
+      "type": "Sports"
+    },
+    {
+      "id": 13,
+      "type": "Science-Fiction"
+    }
+  ],
+  "success": true,
+  "total_categories": 7
+}
+```
+
+#### POST /categories
+
+- General:
+  - Creates a new category using the submitted type. Returns the id of the created category, success value, total
+    categories, and category list.
+- `curl http://127.0.0.1:5000/categories -X POST -H "Content-Type: application/json" -d '{"type":"Music"}'`
+
+``` 
+{
+  "categories": [
+    {
+      "id": 7,
+      "type": "Science"
+    },
+    {
+      "id": 8,
+      "type": "Art"
+    },
+    {
+      "id": 9,
+      "type": "Geography"
+    },
+    {
+      "id": 10,
+      "type": "History"
+    },
+    {
+      "id": 11,
+      "type": "Entertainment"
+    },
+    {
+      "id": 12,
+      "type": "Sports"
+    },
+    {
+      "id": 13,
+      "type": "Science-Fiction"
+    },
+    {
+      "id": 14,
+      "type": "Music"
+    }
+  ],
+  "success": true,
+  "created": 14,
+  "total_categories": 8
+}
+```
+
+#### GET /questions
+
+- General:
+  - Returns a list of question objects, list of category objects, success value, selected category, and total number of
+    questions
+  - Results are paginated in groups of 10. Include a request argument to choose page number, starting from 1.
+- Sample: `curl http://127.0.0.1:5000/questions`
+
+```
+{
+  "categories": [
+    {
+      "id": 7,
+      "type": "Science"
+    },
+    {
+      "id": 8,
+      "type": "Art"
+    },
+    {
+      "id": 9,
+      "type": "Geography"
+    },
+    {
+      "id": 10,
+      "type": "History"
+    },
+    {
+      "id": 11,
+      "type": "Entertainment"
+    },
+    {
+      "id": 12,
+      "type": "Sports"
+    },
+    {
+      "id": 13,
+      "type": "Science-Fiction"
+    }
+  ],
+  "current_category": null,
+  "questions": [
+    {
+      "answer": "Apollo 13",
+      "category": 11,
+      "difficulty": 4,
+      "id": 25,
+      "question": "What movie earned Tom Hanks his third straight Oscar nomination, in 1996?"
+    },
+    {
+      "answer": "Tom Cruise",
+      "category": 11,
+      "difficulty": 4,
+      "id": 26,
+      "question": "What actor did author Anne Rice first denounce, then praise in the role of her beloved Lestat?"
+    },
+    {
+      "answer": "Maya Angelou",
+      "category": 10,
+      "difficulty": 2,
+      "id": 27,
+      "question": "Whose autobiography is entitled 'I Know Why the Caged Bird Sings'?"
+    },
+    {
+      "answer": "Edward Scissorhands",
+      "category": 11,
+      "difficulty": 3,
+      "id": 28,
+      "question": "What was the title of the 1990 fantasy directed by Tim Burton about a young man with multi-bladed appendages?"
+    },
+    {
+      "answer": "Muhammad Ali",
+      "category": 10,
+      "difficulty": 1,
+      "id": 29,
+      "question": "What boxer's original name is Cassius Clay?"
+    },
+    {
+      "answer": "Brazil",
+      "category": 12,
+      "difficulty": 3,
+      "id": 30,
+      "question": "Which is the only team to play in every soccer World Cup tournament?"
+    },
+    {
+      "answer": "Uruguay",
+      "category": 12,
+      "difficulty": 4,
+      "id": 31,
+      "question": "Which country won the first ever soccer World Cup in 1930?"
+    },
+    {
+      "answer": "George Washington Carver",
+      "category": 10,
+      "difficulty": 2,
+      "id": 32,
+      "question": "Who invented Peanut Butter?"
+    },
+    {
+      "answer": "Lake Victoria",
+      "category": 9,
+      "difficulty": 2,
+      "id": 33,
+      "question": "What is the largest lake in Africa?"
+    },
+    {
+      "answer": "The Palace of Versailles",
+      "category": 9,
+      "difficulty": 3,
+      "id": 34,
+      "question": "In which royal palace would you find the Hall of Mirrors?"
+    }
+  ],
+  "success": true,
+  "total_questions": 21
+}
+```
+
+#### POST /questions
+
+- General:
+  - Creates a new question using the submitted question, answer, category and difficulty. Returns the id of the created
+    question, success value, total questions, and question list.
+- `curl http://127.0.0.1:5000/categories -X POST -H "Content-Type: application/json" -d '{"question": "Who is the savior of the world ?", "answer": "Jesus", "category": 10, "difficulty": 1 }'`
+
+``` 
+{
+  "created": 72,
+  "questions": [
+    {
+      "answer": "Apollo 13",
+      "category": 11,
+      "difficulty": 4,
+      "id": 25,
+      "question": "What movie earned Tom Hanks his third straight Oscar nomination, in 1996?"
+    },
+    {
+      "answer": "Tom Cruise",
+      "category": 11,
+      "difficulty": 4,
+      "id": 26,
+      "question": "What actor did author Anne Rice first denounce, then praise in the role of her beloved Lestat?"
+    },
+    {
+      "answer": "Maya Angelou",
+      "category": 10,
+      "difficulty": 2,
+      "id": 27,
+      "question": "Whose autobiography is entitled 'I Know Why the Caged Bird Sings'?"
+    },
+    {
+      "answer": "Edward Scissorhands",
+      "category": 11,
+      "difficulty": 3,
+      "id": 28,
+      "question": "What was the title of the 1990 fantasy directed by Tim Burton about a young man with multi-bladed appendages?"
+    },
+    {
+      "answer": "Muhammad Ali",
+      "category": 10,
+      "difficulty": 1,
+      "id": 29,
+      "question": "What boxer's original name is Cassius Clay?"
+    },
+    {
+      "answer": "Brazil",
+      "category": 12,
+      "difficulty": 3,
+      "id": 30,
+      "question": "Which is the only team to play in every soccer World Cup tournament?"
+    },
+    {
+      "answer": "Uruguay",
+      "category": 12,
+      "difficulty": 4,
+      "id": 31,
+      "question": "Which country won the first ever soccer World Cup in 1930?"
+    },
+    {
+      "answer": "George Washington Carver",
+      "category": 10,
+      "difficulty": 2,
+      "id": 32,
+      "question": "Who invented Peanut Butter?"
+    },
+    {
+      "answer": "Lake Victoria",
+      "category": 9,
+      "difficulty": 2,
+      "id": 33,
+      "question": "What is the largest lake in Africa?"
+    },
+    {
+      "answer": "The Palace of Versailles",
+      "category": 9,
+      "difficulty": 3,
+      "id": 34,
+      "question": "In which royal palace would you find the Hall of Mirrors?"
+    },
+    {
+      "answer": "Agra",
+      "category": 9,
+      "difficulty": 2,
+      "id": 35,
+      "question": "The Taj Mahal is located in which Indian city?"
+    },
+    {
+      "answer": "Escher",
+      "category": 8,
+      "difficulty": 1,
+      "id": 36,
+      "question": "Which Dutch graphic artist–initials M C was a creator of optical illusions?"
+    },
+    {
+      "answer": "Mona Lisa",
+      "category": 8,
+      "difficulty": 3,
+      "id": 37,
+      "question": "La Giaconda is better known as what?"
+    },
+    {
+      "answer": "One",
+      "category": 8,
+      "difficulty": 4,
+      "id": 38,
+      "question": "How many paintings did Van Gogh sell in his lifetime?"
+    },
+    {
+      "answer": "Jackson Pollock",
+      "category": 8,
+      "difficulty": 2,
+      "id": 39,
+      "question": "Which American artist was a pioneer of Abstract Expressionism, and a leading exponent of action painting?"
+    },
+    {
+      "answer": "The Liver",
+      "category": 7,
+      "difficulty": 4,
+      "id": 40,
+      "question": "What is the heaviest organ in the human body?"
+    },
+    {
+      "answer": "Alexander Fleming",
+      "category": 7,
+      "difficulty": 3,
+      "id": 41,
+      "question": "Who discovered penicillin?"
+    },
+    {
+      "answer": "Blood",
+      "category": 7,
+      "difficulty": 4,
+      "id": 42,
+      "question": "Hematology is a branch of medicine involving the study of what?"
+    },
+    {
+      "answer": "Scarab",
+      "category": 10,
+      "difficulty": 4,
+      "id": 43,
+      "question": "Which dung beetle was worshipped by the ancient Egyptians?"
+    },
+    {
+      "answer": "Jesus",
+      "category": 10,
+      "difficulty": 1,
+      "id": 54,
+      "question": "Who is the savior of the world ?"
+    },
+    {
+      "answer": "Former president of Zaire",
+      "category": 10,
+      "difficulty": 3,
+      "id": 65,
+      "question": "Who is Mobutu?"
+    },
+    {
+      "answer": "Jesus",
+      "category": 10,
+      "difficulty": 1,
+      "id": 72,
+      "question": "Who is the savior of the world ?"
+    }
+  ],
+  "success": true,
+  "total_questions": 22
+}
+```
+
+#### GET /categories/category_id/questions
+
+- General:
+  - Returns a list of question objects of given category ID, the category object, success value, and total number of
+    questions
+- Sample: `curl http://127.0.0.1:5000/questions`
+
+```
+{
+  "category": {
+    "id": 12,
+    "type": "Sports"
+  },
+  "questions": [
+    {
+      "answer": "Brazil",
+      "category": 12,
+      "difficulty": 3,
+      "id": 30,
+      "question": "Which is the only team to play in every soccer World Cup tournament?"
+    },
+    {
+      "answer": "Uruguay",
+      "category": 12,
+      "difficulty": 4,
+      "id": 31,
+      "question": "Which country won the first ever soccer World Cup in 1930?"
+    }
+  ],
+  "success": true,
+  "total_questions": 2
+}
+```
+
+#### DELETE /questions/{question_id}
+
+- General:
+  - Deletes the question of the given ID if it exists. Returns the id of the deleted question, success value, total
+    questions, and question list.
+- `curl -X DELETE http://127.0.0.1:5000/questions/72`
+
+```
+{
+  "deleted": 72,
+  "currentCategory": null,
+  "categories": [
+    {
+      "id": 7,
+      "type": "Science"
+    },
+    {
+      "id": 8,
+      "type": "Art"
+    },
+    {
+      "id": 9,
+      "type": "Geography"
+    },
+    {
+      "id": 10,
+      "type": "History"
+    },
+    {
+      "id": 11,
+      "type": "Entertainment"
+    },
+    {
+      "id": 12,
+      "type": "Sports"
+    },
+    {
+      "id": 13,
+      "type": "Science-Fiction"
+    }
+  ],
+  "questions": [
+    {
+      "answer": "Apollo 13",
+      "category": 11,
+      "difficulty": 4,
+      "id": 25,
+      "question": "What movie earned Tom Hanks his third straight Oscar nomination, in 1996?"
+    },
+    {
+      "answer": "Tom Cruise",
+      "category": 11,
+      "difficulty": 4,
+      "id": 26,
+      "question": "What actor did author Anne Rice first denounce, then praise in the role of her beloved Lestat?"
+    },
+    {
+      "answer": "Maya Angelou",
+      "category": 10,
+      "difficulty": 2,
+      "id": 27,
+      "question": "Whose autobiography is entitled 'I Know Why the Caged Bird Sings'?"
+    },
+    {
+      "answer": "Edward Scissorhands",
+      "category": 11,
+      "difficulty": 3,
+      "id": 28,
+      "question": "What was the title of the 1990 fantasy directed by Tim Burton about a young man with multi-bladed appendages?"
+    },
+    {
+      "answer": "Muhammad Ali",
+      "category": 10,
+      "difficulty": 1,
+      "id": 29,
+      "question": "What boxer's original name is Cassius Clay?"
+    },
+    {
+      "answer": "Brazil",
+      "category": 12,
+      "difficulty": 3,
+      "id": 30,
+      "question": "Which is the only team to play in every soccer World Cup tournament?"
+    },
+    {
+      "answer": "Uruguay",
+      "category": 12,
+      "difficulty": 4,
+      "id": 31,
+      "question": "Which country won the first ever soccer World Cup in 1930?"
+    },
+    {
+      "answer": "George Washington Carver",
+      "category": 10,
+      "difficulty": 2,
+      "id": 32,
+      "question": "Who invented Peanut Butter?"
+    },
+    {
+      "answer": "Lake Victoria",
+      "category": 9,
+      "difficulty": 2,
+      "id": 33,
+      "question": "What is the largest lake in Africa?"
+    },
+    {
+      "answer": "The Palace of Versailles",
+      "category": 9,
+      "difficulty": 3,
+      "id": 34,
+      "question": "In which royal palace would you find the Hall of Mirrors?"
+    },
+    {
+      "answer": "Agra",
+      "category": 9,
+      "difficulty": 2,
+      "id": 35,
+      "question": "The Taj Mahal is located in which Indian city?"
+    },
+    {
+      "answer": "Escher",
+      "category": 8,
+      "difficulty": 1,
+      "id": 36,
+      "question": "Which Dutch graphic artist–initials M C was a creator of optical illusions?"
+    },
+    {
+      "answer": "Mona Lisa",
+      "category": 8,
+      "difficulty": 3,
+      "id": 37,
+      "question": "La Giaconda is better known as what?"
+    },
+    {
+      "answer": "One",
+      "category": 8,
+      "difficulty": 4,
+      "id": 38,
+      "question": "How many paintings did Van Gogh sell in his lifetime?"
+    },
+    {
+      "answer": "Jackson Pollock",
+      "category": 8,
+      "difficulty": 2,
+      "id": 39,
+      "question": "Which American artist was a pioneer of Abstract Expressionism, and a leading exponent of action painting?"
+    },
+    {
+      "answer": "The Liver",
+      "category": 7,
+      "difficulty": 4,
+      "id": 40,
+      "question": "What is the heaviest organ in the human body?"
+    },
+    {
+      "answer": "Alexander Fleming",
+      "category": 7,
+      "difficulty": 3,
+      "id": 41,
+      "question": "Who discovered penicillin?"
+    },
+    {
+      "answer": "Blood",
+      "category": 7,
+      "difficulty": 4,
+      "id": 42,
+      "question": "Hematology is a branch of medicine involving the study of what?"
+    },
+    {
+      "answer": "Scarab",
+      "category": 10,
+      "difficulty": 4,
+      "id": 43,
+      "question": "Which dung beetle was worshipped by the ancient Egyptians?"
+    },
+    {
+      "answer": "Jesus",
+      "category": 10,
+      "difficulty": 1,
+      "id": 54,
+      "question": "Who is the savior of the world ?"
+    },
+    {
+      "answer": "Former president of Zaire",
+      "category": 10,
+      "difficulty": 3,
+      "id": 65,
+      "question": "Who is Mobutu?"
+    }
+  ],
+  "success": true,
+  "total_questions": 21
+}
+```
+
+#### POST /quizzes
+
+- General:
+  - Returns a random question object using the submitted list of previous questions and category object.
+- `curl http://127.0.0.1:5000/quizzes -X POST -H "Content-Type: application/json" -d '{"previous_questions": [{"question": "Who is the savior of the world ?", "answer": "Jesus", "category": 10, "difficulty": 1, "id": 54}], "quiz_category": { "id": 10, "type": "History" }'`
+
+```
+{
+  "currentQuestion": {
+    "answer": "Jackson Pollock",
+    "category": 8,
+    "difficulty": 2,
+    "id": 39,
+    "question": "Which American artist was a pioneer of Abstract Expressionism, and a leading exponent of action painting?"
+  }
+}
+```
