@@ -28,7 +28,7 @@ def create_app(test_config=None):
 
     # TODO:Create an endpoint to handle GET requests for all available categories.
 
-    @app.route('/categories', methods=['GET', 'POST'])
+    @app.route('/categories', methods=['GET'])
     @cross_origin()
     def get_categories():
         categories = [category.format() for category in Category.query.all()]
@@ -69,9 +69,9 @@ def create_app(test_config=None):
         return jsonify({
             'success': True,
             'questions': current_questions,
-            'total_question': len(Question.query.all()),
+            'total_questions': len(Question.query.all()),
             'categories': categories,
-            'currentCategory': None
+            'current_category': None
         })
 
     # TODO: Create an endpoint to DELETE question using a question ID.
@@ -89,12 +89,12 @@ def create_app(test_config=None):
                 'success': True,
                 'deleted': question_id,
                 'questions': [question.format() for question in Question.query.all()],
-                'total_question': len(Question.query.all()),
+                'total_questions': len(Question.query.all()),
                 'categories': [category.format() for category in Category.query.all()],
                 'currentCategory': None
             })
 
-        except :
+        except:
             return unprocessable(422)
 
     """
@@ -108,22 +108,34 @@ def create_app(test_config=None):
     @cross_origin()
     def create_question():
         body = request.get_json()
+        search = body.get('searchTerm', None)
 
         try:
-            question = Question(
-                question=body.get('question', None),
-                answer=body.get('answer', None),
-                category=body.get('category', None),
-                difficulty=body.get('difficulty', None),
-            )
-            question.insert()
+            if search:
+                query = Question.query.order_by(Question.id).filter(Question.question.ilike('%{}%'.format(search)))
+                questions = [question.format() for question in query]
 
-            return jsonify({
-                'success': True,
-                'created': question.id,
-                'questions': [question.format() for question in Question.query.all()],
-                'total_question': len(Question.query.all())
-            })
+                return jsonify({
+                    'success': True,
+                    'questions': questions,
+                    'total_questions': len(query.all())
+
+                })
+            else:
+                question = Question(
+                    question=body.get('question', None),
+                    answer=body.get('answer', None),
+                    category=body.get('category', None),
+                    difficulty=body.get('difficulty', None),
+                )
+                question.insert()
+
+                return jsonify({
+                    'success': True,
+                    'created': question.id,
+                    'questions': [question.format() for question in Question.query.all()],
+                    'total_questions': len(Question.query.all())
+                })
         except:
             return unprocessable(422)
 
@@ -160,7 +172,7 @@ def create_app(test_config=None):
             'success': True,
             'questions': current_questions,
             'category': category.format(),
-            'total_question': len(current_questions),
+            'total_questions': len(current_questions),
 
         })
 
@@ -174,6 +186,38 @@ def create_app(test_config=None):
     #  This endpoint should take category and previous question parameters
     #  and return a random questions within the given category,
     #  if provided, and that is not one of the previous questions.
+    def get_random_question(previous_questions, questions):
+        if previous_questions:
+            for previous_question in previous_questions:
+                questions.remove(previous_question)
+        if not questions:
+            return []
+
+        return random.choice(questions)
+
+    @app.route('/quizzes', methods=['POST'])
+    @cross_origin()
+    def next_question():
+        body = request.get_json()
+        previous_questions = body.get('previous_questions', None)
+
+        if type(body.get('quiz_category', None).get('type')) == str:
+            questions = Question.query.all()
+            all_questions = [question.format() for question in questions]
+
+            current_question = get_random_question(previous_questions, all_questions)
+
+        else:
+            category_id = body.get('quiz_category', None).get('type').get('id')
+
+            questions = Question.query.filter(Question.category == category_id).all()
+            category_questions = [question.format() for question in questions]
+
+            current_question = get_random_question(previous_questions, category_questions)
+
+        return jsonify({
+            'currentQuestion': current_question
+        })
 
     """
     TEST: In the "Play" tab, after a user selects "All" or a category,
@@ -213,5 +257,25 @@ def create_app(test_config=None):
             "error": 405,
             "message": "Method not allowed"
         }), 405
+
+    @app.route('/categories', methods=['POST'])
+    @cross_origin()
+    def create_category():
+        body = request.get_json()
+
+        try:
+            category = Category(
+                type=body.get('type', None),
+            )
+            category.insert()
+
+            return jsonify({
+                'success': True,
+                'created': category.id,
+                'categories': [category.format() for category in Category.query.all()],
+                'total_categories': len(Category.query.all())
+            })
+        except:
+            return unprocessable(422)
 
     return app

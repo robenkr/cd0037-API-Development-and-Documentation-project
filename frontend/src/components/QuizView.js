@@ -45,7 +45,7 @@ class QuizView extends Component {
   getNextQuestion = () => {
     const previousQuestions = [...this.state.previousQuestions];
     if (this.state.currentQuestion.id) {
-      previousQuestions.push(this.state.currentQuestion.id);
+      previousQuestions.push(this.state.currentQuestion);
     }
 
     $.ajax({
@@ -65,9 +65,9 @@ class QuizView extends Component {
         this.setState({
           showAnswer: false,
           previousQuestions: previousQuestions,
-          currentQuestion: result.question,
+          currentQuestion: result.currentQuestion,
           guess: '',
-          forceEnd: result.question ? false : true,
+          forceEnd: !result.currentQuestion.question,
         });
         return;
       },
@@ -132,7 +132,7 @@ class QuizView extends Component {
         <div className='final-header'>
           Your Final Score is {this.state.numCorrect}
         </div>
-        <div className='play-again button' onClick={this.restartGame}>
+        <div className='play-again button pointer' onClick={this.restartGame}>
           Play Again?
         </div>
       </div>
@@ -161,7 +161,7 @@ class QuizView extends Component {
           {evaluate ? 'You were correct!' : 'You were incorrect'}
         </div>
         <div className='quiz-answer'>{this.state.currentQuestion.answer}</div>
-        <div className='next-question button' onClick={this.getNextQuestion}>
+        <div className='next-question button pointer' onClick={this.getNextQuestion}>
           {' '}
           Next Question{' '}
         </div>
@@ -178,12 +178,12 @@ class QuizView extends Component {
     ) : (
       <div className='quiz-play-holder'>
         <div className='quiz-question'>
-          {this.state.currentQuestion.question}
+          {typeof this.state.currentQuestion.question === "string" ? this.state.currentQuestion.question : '' }
         </div>
         <form onSubmit={this.submitGuess}>
           <input type='text' name='guess' onChange={this.handleChange} />
           <input
-            className='submit-guess button'
+            className='submit-guess button pointer'
             type='submit'
             value='Submit Answer'
           />
