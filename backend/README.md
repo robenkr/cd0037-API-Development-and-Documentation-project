@@ -757,3 +757,13 @@ The API will return two error types when requests fail:
   }
 }
 ```
+
+## Deployment N/A
+
+## Authors
+
+Roland Tubongye Wabubindja.
+
+## Acknowledgements
+
+To our Instructor Caryn and the great team at udacity.
