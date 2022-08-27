@@ -28,7 +28,7 @@ def create_app(test_config=None):
 
     # TODO:Create an endpoint to handle GET requests for all available categories.
 
-    @app.route('/categories', methods=['GET', 'POST'])
+    @app.route('/categories', methods=['GET'])
     @cross_origin()
     def get_categories():
         categories = [category.format() for category in Category.query.all()]
@@ -89,7 +89,7 @@ def create_app(test_config=None):
                 'success': True,
                 'deleted': question_id,
                 'questions': [question.format() for question in Question.query.all()],
-                'total_question': len(Question.query.all()),
+                'total_questions': len(Question.query.all()),
                 'categories': [category.format() for category in Category.query.all()],
                 'currentCategory': None
             })
@@ -134,7 +134,7 @@ def create_app(test_config=None):
                     'success': True,
                     'created': question.id,
                     'questions': [question.format() for question in Question.query.all()],
-                    'total_question': len(Question.query.all())
+                    'total_questions': len(Question.query.all())
                 })
         except:
             return unprocessable(422)
